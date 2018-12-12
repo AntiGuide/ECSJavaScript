@@ -1,4 +1,4 @@
-import {GenerationalList} from './generation-list';
+import {GenerationalList} from './generational-list';
 
 test('it allocates an entity', () => {
     const list = new GenerationalList(1);

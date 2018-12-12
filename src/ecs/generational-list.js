@@ -1,6 +1,6 @@
 import{Entity} from './entity';
 
-export class GenerationList{
+export class GenerationalList{
     constructor(size){
         this.entries = [];
         this.freeList = [];
