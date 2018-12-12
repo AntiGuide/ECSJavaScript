@@ -1,7 +1,7 @@
-import {GenerationList} from './generation-list';
+import {GenerationalList} from './generation-list';
 
 test('it allocates an entity', () => {
-    const list = new GenerationList(1);
+    const list = new GenerationalList(1);
 
     const entity = list.allocate();
 
@@ -9,7 +9,7 @@ test('it allocates an entity', () => {
 });
 
 test('it frees an entity', () => {
-    const list = new GenerationList(1);
+    const list = new GenerationalList(1);
 
     const entity = list.allocate();
 
@@ -19,14 +19,14 @@ test('it frees an entity', () => {
 });
 
 test('it can not allocate beyond its size', () => {
-    const list = new GenerationList(1);
+    const list = new GenerationalList(1);
     list.allocate();
 
     expect(() => list.allocate()).toThrow();
 });
 
 test('', () => {
-    const list = new GenerationList(2);
+    const list = new GenerationalList(2);
     const first = list.allocate();
     const second = list.allocate();
 
