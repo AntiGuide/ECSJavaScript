@@ -1,25 +1,52 @@
 import {Chunk} from './chunk';
+import { Archetype } from './archetype';
+import {Component} from './component'
+import { Entity } from './entity';
+
+function createArchetype(){
+    const position = Component.float2('position');
+    const acceleration = Component.float2('acceleration');
+    const velocity = Component.float2('velocity');
+    return Archetype.fromComponents(position, acceleration, velocity);
+}
 
 test('it works', () => {
-    const chunk = new Chunk(16);
+    const archetype = createArchetype();
+    const chunk = new Chunk(1, archetype);
     
-    expect(chunk.sizeInBytes).toBe(16);
-    expect(chunk.buffer.byteLength).toBe(16);
+    expect(chunk.entityCount).toBe(1);
+    expect(chunk.buffer.byteLength).toBe(24);
 });
 
-test('', () => {
-    const buffer = new ArrayBuffer(4);
-    const intBuffer = new Int32Array(buffer);
-    const byteBuffer = new Int8Array(buffer);
+test('it creates the correct views', () => {
+    const archetype = createArchetype();
+    const chunk = new Chunk(2, archetype);
 
-    expect(intBuffer[0]).toBe(0);
+    const positionView = chunk.views[0];
+    expect(positionView.offset).toBe(0);
+    expect(positionView.stride).toBe(8);
+    expect(positionView.array.byteLength).toBe(16);
 
-    intBuffer[0] = 1337;
+    const accelerationView = chunk.views[1];
+    expect(accelerationView.offset).toBe(16);
+    expect(accelerationView.stride).toBe(8);
+    expect(accelerationView.array.byteLength).toBe(16);
 
-    console.log(byteBuffer[0], byteBuffer[1], byteBuffer[2], byteBuffer[3])
+    const velocityView = chunk.views[2];
+    expect(velocityView.offset).toBe(32);
+    expect(velocityView.stride).toBe(8);
+    expect(velocityView.array.byteLength).toBe(16);
 
-    expect(byteBuffer[0]).toBe(57);
-    expect(byteBuffer[1]).toBe(5);
-    expect(byteBuffer[2]).toBe(0);
-    expect(byteBuffer[3]).toBe(0);
+    for(let i = 0;i < chunk.views.length;i++){
+        const view = chunk.views[i];
+
+
+    }
+});
+
+test('it creates an entity', () => {
+    const archetype = createArchetype();
+    const chunk = new Chunk(512, archetype);
+
+    const entity = chunk.createEntity();
 });

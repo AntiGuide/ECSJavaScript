@@ -1,11 +1,5 @@
 import {createAdder, Adder, addAll, addOneToAllElements} from './index'
 
-test('it works', () => {
-    console.log('yay');
-
-    //throw new Error('failed.');
-});
-
 test('it works with classes', () => {
     const adder = new Adder(10);
 
