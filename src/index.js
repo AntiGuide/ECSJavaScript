@@ -7,13 +7,25 @@ const cubeArchetypes = Archetype.fromComponents(
     Component.float3('position'),
     Component.float3('rotation')
 );
+const cubesX = 29;
+const cubesY = 32;
+const componentCount = cubesX * cubesY;
 
-const chunk = new Chunk(12, cubeArchetypes);
+const chunk = new Chunk(componentCount, cubeArchetypes);
 const rotateSystem = new RotateSystem([chunk]);
 
 const entities = [];
-for(let i = 0;i < 12;i++){
+for(let i = 0;i < componentCount;i++){
     entities[i] = chunk.createEntity();
+}
+
+let i = 0;
+for(let x = 0;x < cubesX;x++){
+    for(let y = 0;y < cubesY;y++){
+        const entity = entities[i++];
+
+        chunk.setComponentData(0, entity, [((-cubesX / 2) + x) * 0.04, ((-cubesY / 2) + y) * 0.04, 0]);
+    }   
 }
 
 const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 10);
@@ -21,10 +33,10 @@ camera.position.z = 1;
 
 const scene = new THREE.Scene();
 
-const geometry = new THREE.BoxGeometry(0.2,0.2,0.2);
+const geometry = new THREE.BoxGeometry(0.02,0.02,0.02);
 const material = new THREE.MeshNormalMaterial();
 
-const meshes = entities.map(entities => {
+const meshes = entities.map((entities) => {
     const mesh = new THREE.Mesh(geometry, material);
     scene.add(mesh);
     return mesh;
@@ -39,7 +51,7 @@ const render = () => {
     
     rotateSystem.update();
 
-    for(let i = 0;i < 12;i++){
+    for(let i = 0;i < componentCount;i++){
         const entity = entities[i];
         const mesh = meshes[i];
         
