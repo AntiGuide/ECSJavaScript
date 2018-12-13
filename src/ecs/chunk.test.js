@@ -49,4 +49,11 @@ test('it creates an entity', () => {
     const chunk = new Chunk(512, archetype);
 
     const entity = chunk.createEntity();
+
+    chunk.setComponentData(0, entity, [13,17]);
+
+    const data = chunk.getComponentData(0, entity);
+
+    expect(data[0]).toBe(13);
+    expect(data[1]).toBe(17);
 });

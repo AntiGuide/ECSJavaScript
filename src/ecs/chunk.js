@@ -1,4 +1,6 @@
 import { GenerationalList } from "./generational-list";
+import { View } from './view';
+
 export class Chunk {
     constructor(entityCount, archetype){
         this.entityCount = entityCount;
@@ -7,6 +9,7 @@ export class Chunk {
         this.entities = new GenerationalList(entityCount);
         this.entityIndices = Array(entityCount).map(() => -1);
 
+        this.bumpPointer = 0;
 
         const sizePerEntity = this.archetype.getSizePerEntity();
         this.buffer = new ArrayBuffer(entityCount * sizePerEntity);
@@ -21,11 +24,12 @@ export class Chunk {
             const type = component.type;
             const items = this.entityCount * component.elementCount;
 
-            this.views.push({
+            this.views.push(new View(
                 offset,
                 stride,
-                array: new type(this.buffer, offset, items),
-            });
+                component.elementCount,
+                new type(this.buffer, offset, items),
+            ));
 
             offset += length;
         }
@@ -41,14 +45,26 @@ export class Chunk {
     }
 
     setComponentData(componentIndex, entity, data){
-        const component = this.archetype.components[componentIndex];
         const view = this.views[componentIndex];
         const index = this.entityIndices[entity.id];
 
-        const offset = index * component.elementCount;
-        
-        for(let i = 0;i < component.elementCount;i++){
-            view.Array[offset + i] = data[i];
+        view.setData(index, data);
+    }
+
+    getComponentData(componentIndex, entity){
+        const view = this.views[componentIndex];
+        const index = this.entityIndices[entity.id];
+
+        return view.getData(index);
+    }
+
+    execute(indices, callback){
+        const views = indices.map(i => this.views[i]);
+
+        for(let i = 0; i < this.bumpPointer; i++){
+            const data = views.map(v => v.getData(i));
+            callback.apply(null, data);
+            views.map((v, index) => v.setData(i, data[index]));
         }
     }
 }
